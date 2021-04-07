@@ -29,7 +29,7 @@ def get_titles_from_search_results(filename):
         title = title_tag['title']
         book_titles.append((title.strip(), author.strip()))
     return book_titles
-
+#get_titles_from_search_results('search_results.htm')
 
 def get_search_links():
     """
@@ -47,9 +47,15 @@ def get_search_links():
     url = "https://www.goodreads.com/search?q=fantasy&qid=NwUsLiA2Nc"
     request = requests.get(url)
     soup = BeautifulSoup(request.text, 'html.parser')
-    print(soup.prettify)
-
-get_search_links()
+    book_urls = []
+    base_url = "goodreads.com"
+    for x in range(10):
+        book_tags = soup.find_all('tr', {'itemtype':'http://schema.org/Book'})[x]
+        url_tag = book_tags.find('a')
+        url1 = url_tag['href']
+        book_url = base_url+url1
+        book_urls.append(book_url.strip())
+    return book_urls
 
 def get_book_summary(book_url): 
     """
@@ -64,9 +70,23 @@ def get_book_summary(book_url):
     You can easily capture CSS selectors with your browser's inspector window.
     Make sure to strip() any newlines from the book title and number of pages.
     """
+    request = requests.get(book_url)
+    soup = BeautifulSoup(request.text, 'html.parser')
+    book_title1 = soup.find('meta', {'property':'og:title'})
+    book_title2 = book_title1['content'].strip()
+    book_pages1 = soup.find('meta', {'property':'books:page_count'})
+    book_pages2 = book_pages1['content'].strip()
+    author = " "
+    book_author1 = soup.find('title').text
+    book_author2 = book_author1.split()
+    book_author3 = book_author2[-2:]
+    book_author4 = author.join(book_author3)
+    book_author5 = book_author4.strip()
+    summary = (book_title2, book_author5, book_pages2)
+    print(summary)
+    return summary
 
-    pass
-
+#get_book_summary('https://www.goodreads.com/book/show/84136.Fantasy_Lover?from_search=true&from_srp=true&qid=NwUsLiA2Nc&rank=1')
 
 def summarize_best_books(filepath):
     """
@@ -79,8 +99,25 @@ def summarize_best_books(filepath):
     ("Fiction", "The Testaments (The Handmaid's Tale, #2)", "https://www.goodreads.com/choiceawards/best-fiction-books-2020") 
     to your list of tuples.
     """
-    pass
+    base_path = os.path.abspath(os.path.dirname(__file__))
+    full_path = os.path.join(base_path, filepath)
+    obj = open(full_path, 'r')
+    obj_content = obj.read()
+    obj.close()
+    soup = BeautifulSoup(obj_content, 'html.parser')
+    book_summary = []
+    for x in range(20):
+        best_books_data = soup.find_all('div', {'class':'category clearFix'})[x]
+        category1 = best_books_data.find('a').text
+        category2 = category1.strip()
+        title = best_books_data.find('img')['alt'].strip()
+        url = best_books_data.find('a')['href'].strip()
+        book_summary.append((category2, title, url))
+    #print(book_summary)
+    return book_summary
+        #print(category2)
 
+#summarize_best_books('best_books_2020.htm')
 
 def write_csv(data, filename):
     """
@@ -102,7 +139,15 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    pass
+    header = ['Book title', 'Author Name']
+
+    with open(filename, 'w') as File:
+        writer = csv.writer(File)
+        writer.writerow(header)
+        for x in data:
+            writer.writerow(x)
+
+#write_csv(get_titles_from_search_results('search_results.htm'), 'search_results.csv')
 
 
 def extra_credit(filepath):
@@ -112,12 +157,14 @@ def extra_credit(filepath):
     Please see the instructions document for more information on how to complete this function.
     You do not have to write test cases for this function.
     """
+
+    
     pass
 
 class TestCases(unittest.TestCase):
 
     # call get_search_links() and save it to a static variable: search_urls
-
+    
 
     def test_get_titles_from_search_results(self):
         # call get_titles_from_search_results() on search_results.htm and save to a local variable
@@ -194,8 +241,6 @@ class TestCases(unittest.TestCase):
 if __name__ == '__main__':
     print(extra_credit("extra_credit.htm"))
     unittest.main(verbosity=2)
-    #get_titles_from_search_results('search_results.htm')
-
 
 
 
