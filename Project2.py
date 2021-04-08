@@ -99,9 +99,8 @@ def summarize_best_books(filepath):
     ("Fiction", "The Testaments (The Handmaid's Tale, #2)", "https://www.goodreads.com/choiceawards/best-fiction-books-2020") 
     to your list of tuples.
     """
-    base_path = os.path.abspath(os.path.dirname(__file__))
-    full_path = os.path.join(base_path, filepath)
-    obj = open(full_path, 'r')
+    
+    obj = open(filepath, 'r')
     obj_content = obj.read()
     obj.close()
     soup = BeautifulSoup(obj_content, 'html.parser')
@@ -157,9 +156,8 @@ def extra_credit(filepath):
     Please see the instructions document for more information on how to complete this function.
     You do not have to write test cases for this function.
     """
-    base_path = os.path.abspath(os.path.dirname(__file__))
-    full_path = os.path.join(base_path, filepath)
-    obj = open(full_path, 'r')
+    
+    obj = open(filepath, 'r')
     obj_content = obj.read()
     obj.close()
     soup = BeautifulSoup(obj_content, 'html.parser')
@@ -184,31 +182,37 @@ class TestCases(unittest.TestCase):
 
     def test_get_titles_from_search_results(self):
         # call get_titles_from_search_results() on search_results.htm and save to a local variable
-        results = get_titles_from_search_results(filename)
+        results = get_titles_from_search_results('search_results.htm')
+
         # check that the number of titles extracted is correct (20 titles)
-        
+        self.assertEqual(len(results), 20)
+
         # check that the variable you saved after calling the function is a list
+        self.assertEqual(isinstance(results, list), True)
 
         # check that each item in the list is a tuple
+        self.assertEqual(isinstance(results[1], tuple), True)
 
         # check that the first book and author tuple is correct (open search_results.htm and find it)
+        self.assertEqual(results[0], ('Harry Potter and the Deathly Hallows','J.K. Rowling'))
 
         # check that the last title is correct (open search_results.htm and find it)
-        pass
+        self.assertEqual(results[-1], ('Harry Potter: The Prequel (Harry Potter, #0.5)','J.K. Rowling'))
+
     def test_get_search_links(self):
         # check that TestCases.search_urls is a list
-
+        self.assertEqual(isinstance(TestCases.search_urls), True)
         # check that the length of TestCases.search_urls is correct (10 URLs)
-
-
+        self.assertEqual(len(TestCases.search_urls), 10)
         # check that each URL in the TestCases.search_urls is a string
+        self.assertEqual(isinstance(TestCases.search_urls[1]), str)
         # check that each URL contains the correct url for Goodreads.com followed by /book/show/
-        pass
+        self.assertEqual(if 'https://www.goodreads.com/book/show/' in TestCases.search_urls[0], True)
 
     def test_get_book_summary(self):
         # create a local variable – summaries – a list containing the results from get_book_summary()
         # for each URL in TestCases.search_urls (should be a list of tuples)
-
+        get_book_summary()
         # check that the number of book summaries is correct (10)
 
             # check that each item in the list is a tuple
