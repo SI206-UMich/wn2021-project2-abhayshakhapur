@@ -157,20 +157,36 @@ def extra_credit(filepath):
     Please see the instructions document for more information on how to complete this function.
     You do not have to write test cases for this function.
     """
-
-    
-    pass
+    base_path = os.path.abspath(os.path.dirname(__file__))
+    full_path = os.path.join(base_path, filepath)
+    obj = open(full_path, 'r')
+    obj_content = obj.read()
+    obj.close()
+    soup = BeautifulSoup(obj_content, 'html.parser')
+    book_desc = soup.find('div', {'id':'descriptionContainer'})
+    description_text = book_desc.find_all('span')[1].text
+    proper_nouns = re.findall(r"(?<!\.\s)(?!^)\b([A-Z][a-z]\w*(?:\s+[A-Z][a-z]\w*)*)", description_text)
+    named_entities = []
+    named_entities1 = []
+    for x in proper_nouns:
+        if len(x.split())>1:
+            named_entities.append(x)
+    for x in named_entities:
+        named_entities.append(x.strip())
+    print(named_entities1)
+    return named_entities1
+extra_credit('extra_credit.htm')
 
 class TestCases(unittest.TestCase):
 
     # call get_search_links() and save it to a static variable: search_urls
-    
+    search_urls = get_search_links()
 
     def test_get_titles_from_search_results(self):
         # call get_titles_from_search_results() on search_results.htm and save to a local variable
-
+        results = get_titles_from_search_results(filename)
         # check that the number of titles extracted is correct (20 titles)
-
+        
         # check that the variable you saved after calling the function is a list
 
         # check that each item in the list is a tuple
